@@ -4,7 +4,7 @@ import tensorflow as tf
 from tensorflow.keras.models import load_model
 
 # Load your trained classification model
-model = load_model(r"resort\Keshav_part\models\garbage_tf_model.h5")
+model = load_model(r"resort\backend\models\garbage_tf_model.h5")
 
 # Class names in the same order as used during training
 CLASS_NAMES = ["battery", "biological", "cardboard", "clothes", 

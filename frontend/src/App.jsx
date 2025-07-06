@@ -1,45 +1,42 @@
 import React, { useState } from 'react';
 
 function App() {
-  const [image, setImage] = useState(null);
+  const [file, setFile] = useState(null);
   const [result, setResult] = useState(null);
 
-  const handleUpload = async (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
-    if (!image) return;
+    if (!file) return;
 
     const formData = new FormData();
-    formData.append("image", image);
+    formData.append("image", file);
 
-    const res = await fetch("http://localhost:5000/analyze", {
+    const res = await fetch("http://127.0.0.1:5000/analyze", {
       method: "POST",
       body: formData,
     });
-
     const data = await res.json();
     setResult(data);
-  };
+  }
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <h1>Garbage Classification and Counting</h1>
-      <form onSubmit={handleUpload}>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => setImage(e.target.files[0])}
+    <div>
+      <form onSubmit={handleSubmit}>
+        <input 
+          type="file" 
+          onChange={e => setFile(e.target.files[0])} 
         />
         <button type="submit">Analyze</button>
       </form>
-
       {result && (
         <div>
-          <h2>Result:</h2>
-          <pre>{JSON.stringify(result, null, 2)}</pre>
+          <p>Total objects: {result.total_objects}</p>
+          <p>Class: {result.predicted_class}</p>
         </div>
       )}
     </div>
   );
 }
+
 
 export default App;
