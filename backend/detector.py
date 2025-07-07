@@ -5,10 +5,12 @@ import cv2 as cv
 import numpy as np
 from tensorflow.keras.models import load_model
 
-#resort\backend\models\garbage_tf_model.h5
+
 # ─── CONFIG ───────────────────────────────────────────────────────────────────
-MODEL_PATH    = os.path.join("resort","backend", "models", "garbage_tf_model.h5")
-UPLOADS       = os.path.join("resort","backend", "uploads")
+
+MODEL_PATH    = os.path.join("backend", "models", "garbage_tf_model.h5")
+print("[DEBUG] Does model file exist?", os.path.exists(MODEL_PATH))
+UPLOADS       = os.path.join("backend", "uploads")
 ANNOTATED_DIR = os.path.join(UPLOADS, "annotated")
 IMG_SIZE      = 224
 
