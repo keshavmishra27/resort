@@ -2,7 +2,8 @@ from flask import Flask, request, jsonify,render_template
 from flask_cors import CORS
 import os
 from werkzeug.utils import secure_filename
-
+import cv2 as cv
+import numpy as np
 from detector import detect_objects_and_classify
 
 app = Flask(__name__)
@@ -20,7 +21,7 @@ def index():
 @app.route("/analyze", methods=["POST"])
 def analyze():
     if 'image' not in request.files:
-        return jsonify({"error": "No image uploaded"}), 400
+        return jsonify({"error": "No image uploaded please try again!!!"}), 400
 
     file = request.files['image']
     filename = secure_filename(file.filename)

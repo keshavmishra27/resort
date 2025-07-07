@@ -11,7 +11,7 @@ CLASS_NAMES = ["battery", "biological", "cardboard", "clothes",
                "glass", "metal", "paper", "plastic", "shoes", "trash"]
 
 # Load image
-image_path = r"datset\test\battery\battery8.jpg"  # 🔁 Replace with actual path
+image_path = r"resort\backend\uploads\battery30.jpg"  # 🔁 Replace with actual path
 img = cv2.imread(image_path)
 original = img.copy()
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -28,7 +28,7 @@ closed = cv2.morphologyEx(edges, cv2.MORPH_CLOSE, kernel)
 contours, _ = cv2.findContours(closed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
 # Filter small objects
-min_area = 100
+min_area = 1000
 filtered_contours = [cnt for cnt in contours if cv2.contourArea(cnt) > min_area]
 
 print(f"Detected objects: {len(filtered_contours)}")
