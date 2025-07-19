@@ -20,8 +20,8 @@ train_datagen = ImageDataGenerator(
 
 valid_datagen = ImageDataGenerator(rescale=1/255)
 
-train_dir = r"final_datset\train"
-val_dir   = r"final_datset\val"
+train_dir = r"E:\Projects\KFiles\samsung_hackathon\final_datset\train"
+val_dir   = r"E:\Projects\KFiles\samsung_hackathon\final_datset\val"
 
 train_gen = train_datagen.flow_from_directory(
     train_dir, target_size=(224,224),

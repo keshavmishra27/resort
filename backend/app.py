@@ -69,6 +69,12 @@ def analyze():
         image_url=image_url
     )
 
+@app_blueprint.route('/leaderboard')
+def leaderboard_page():
+    users = User.query.order_by(User.score.desc()).all()
+    return render_template('leaderboard.html', users=users)
+
+
 @app_blueprint.route('/register', methods=['GET', 'POST'])
 def register_page():
     form = RegisterForm()
