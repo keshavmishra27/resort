@@ -31,43 +31,35 @@ def upload_page():
 
 @app_blueprint.route("/analyze", methods=["POST"])
 def analyze():
-    if current_user.is_authenticated:
-        current_user.score = session.get("score", 0)
-        db.session.commit()
+    uploaded_files = request.files.getlist('images')
+    results = []
 
-    file = request.files.get("image")
-    if not file:
-        return "No file uploaded", 400
+    for image in uploaded_files:
+        if image.filename == '':
+            continue
+        
+        filename = datetime.now().strftime("object_detected_%Y%m%d%H%M%S") + "_" + image.filename
+        filepath = os.path.join(UPLOAD_FOLDER, filename)
+        image.save(filepath)
 
-    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-    input_filename = f"uploaded_{timestamp}.jpg"
-    output_filename = f"object_detected_{timestamp}.jpg"
+        predicted_class = classify_image(filepath)  # Your function
+        result = universal_object_counter(filepath)
+        print("DEBUG - object counter result:", result)
+        object_count, score = universal_object_counter(filepath)
+        detected_objects = {
+        "object_count": object_count,
+         "score": score
+        }
 
-    input_path = os.path.join(UPLOAD_FOLDER, input_filename)
-    output_path = os.path.join(UPLOAD_FOLDER, output_filename)
 
-    file.save(input_path)
+        results.append({
+            'filename': filename,
+            'predicted_class': predicted_class,
+            'objects': detected_objects
+        })
 
-    object_class, confidence = classify_image(input_path)
-    if confidence is None:
-        confidence = 0.0
+    return render_template("result.html", results=results)
 
-    count, _ = universal_object_counter(input_path, output_path=output_path)
-
-    previous = session.get("score", 0)
-    session["score"] = previous + count
-    total_score = session["score"]
-
-    image_url = url_for("static", filename=f"uploads/{output_filename}")
-
-    return render_template(
-        "result.html",
-        object_class=object_class,
-        count=count,
-        total_score=total_score,
-        confidence=confidence,
-        image_url=image_url
-    )
 
 @app_blueprint.route('/leaderboard')
 def leaderboard_page():
