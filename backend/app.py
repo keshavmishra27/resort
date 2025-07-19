@@ -1,4 +1,5 @@
 from flask import Flask, request, render_template, url_for
+from flask import session
 from flask_cors import CORS
 import os
 from datetime import datetime
@@ -8,6 +9,9 @@ from obj_count import universal_object_counter
 app = Flask(__name__)
 CORS(app)
 
+# 1) enable sessions
+app.secret_key = "change_this_to_a_random_secret"
+
 UPLOAD_FOLDER = os.path.join("backend", "static", "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
@@ -15,41 +19,46 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 @app.route("/")
 @app.route("/upload")
 def index():
-    return render_template("upload.html")
+     return render_template("upload.html")
 
 @app.route("/analyze", methods=["POST"])
 def analyze():
-    file = request.files.get("image")
-    if not file:
-        return "No file uploaded", 400
+     file = request.files.get("image")
+     if not file:
+         return "No file uploaded", 400
+
+     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+     input_filename = f"uploaded_{timestamp}.jpg"
+     output_filename = f"object_detected_{timestamp}.jpg"
+
+     input_path = os.path.join(app.config["UPLOAD_FOLDER"], input_filename)
+     output_path = os.path.join(app.config["UPLOAD_FOLDER"], output_filename)
+
+     file.save(input_path)
+
+     object_class, confidence = classify_image(input_path)
+     if confidence is None:
+         confidence = 0.0
+
+     # after
+     count, _ = universal_object_counter(input_path, output_path=output_path)
 
 
-    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-    input_filename = f"uploaded_{timestamp}.jpg"
-    output_filename = f"object_detected_{timestamp}.jpg"
+   # 2) update running score in session
+     previous = session.get("score", 0)
+     session["score"] = previous + count
+     total_score = session["score"]
 
-    input_path = os.path.join(app.config["UPLOAD_FOLDER"], input_filename)
-    output_path = os.path.join(app.config["UPLOAD_FOLDER"], output_filename)
+     image_url = url_for("static", filename=f"uploads/{output_filename}")
 
-
-    file.save(input_path)
-
-
-    object_class, confidence = classify_image(input_path)
-    if confidence is None:
-        confidence = 0.0
-
-    count = universal_object_counter(input_path, output_path=output_path)
-
-    image_url = url_for("static", filename=f"uploads/{output_filename}")
-
-    return render_template(
-        "result.html",
-        object_class=object_class,
-        count=count,
-        confidence=confidence,
-        image_url=image_url
-    )
+     return render_template(
+         "result.html",
+         object_class=object_class,
+         count=count,
+         total_score=total_score,
+         confidence=confidence,
+         image_url=image_url
+     )
 
 if __name__ == "__main__":
-    app.run(debug=True)
+     app.run(debug=True)

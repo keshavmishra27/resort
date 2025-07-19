@@ -7,7 +7,9 @@
   <h2>Image Analysis Result</h2>
 
   <p><strong>Predicted Class:</strong> {{ object_class }}</p>
-  <p><strong>Count of Objects:</strong> {{ count }}</p>
+  <p><strong>Count of Objects This Upload:</strong> {{ count }}</p>
+
++  <p><strong>Your Total Score So Far:</strong> {{ total_score }}</p>
 
   <h3>Detected Objects in Image:</h3>
   <img src="{{ image_url }}" alt="Detected Image" width="400">
