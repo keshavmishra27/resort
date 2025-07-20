@@ -6,6 +6,14 @@
 
 {% block content %}
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Quantico:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+    .h1 {
+      font-family: 'Quantico', sans-serif;
+      font-weight: 700;
+    }
+
+    
     body {
       margin: 0;
       padding: 0;
@@ -20,10 +28,22 @@
     }
 
     form {
-      background-color: aqua;
+      background: linear-gradient(-45deg, #10b981, #22c55e, #059669, #10b981);
+      background-size: 200% 200%;
+      animation: gradientMove 6s ease infinite;
       display: inline-block;
       padding: 20px;
       border-radius: 8px;
+
+
+@keyframes gradientMove {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
     }
 
     button {
@@ -33,6 +53,7 @@
       cursor: pointer;
     }
   </style>
+
 
   <h1>Upload an Image</h1>
   <form 
