@@ -1,6 +1,10 @@
-flask
+Flask
+Flask-WTF
+email_validator
 numpy
 opencv-python
 tensorflow
 Pillow
-email_validator
+Werkzeug
+gunicorn
+wtforms
