@@ -1,71 +1,76 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
-from flask_login import login_user, logout_user, current_user
-from backend.credentials import User
-from backend.class_pred import classify_image
-from backend.obj_count import universal_object_classifier
-from backend.forms import RegisterForm, LoginForm
-from backend import db
-from datetime import datetime
+from flask import Blueprint, render_template, request, flash, url_for, redirect
+from flask_login import login_required, current_user, login_user,logout_user
+from werkzeug.utils import secure_filename
 import os
+from backend.class_pred import classify_image
+from backend.forms import LoginForm, RegisterForm
+from backend.obj_count import detect_objects_and_save
+from backend.scores import SCORES
+from backend import db
+from backend.credentials import User
 
 app_blueprint = Blueprint('app_blueprint', __name__)
 UPLOAD_FOLDER = os.path.join("backend", "static", "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+def allowed_file(fn): return '.' in fn and fn.rsplit('.',1)[1].lower() in ALLOWED_EXTENSIONS
 
-@app_blueprint.context_processor
-def inject_user():
-    return dict(current_user=current_user)
+@app_blueprint.route('/analyze', methods=['POST'])
+@login_required
+def analyze():
+    if 'images' not in request.files:
+        flash("No file part", 'danger')
+        return redirect(url_for('app_blueprint.upload_page'))
 
+    files = request.files.getlist('images')
+    results = []
+
+    for file in files:
+        if not file or file.filename == '' or not allowed_file(file.filename):
+            continue
+
+        fn = secure_filename(file.filename)
+        in_path  = os.path.join(UPLOAD_FOLDER, "in_"  + fn)
+        out_path = os.path.join(UPLOAD_FOLDER, "out_" + fn)
+        file.save(in_path)
+
+        # 1) Classify + annotate label
+        predicted_class, confidence = classify_image(in_path, out_path)
+
+        # 2) Detect objects + draw boxes
+        object_count = detect_objects_and_save(out_path, out_path)
+
+        # 3) Compute per-image score
+        per_item_score = SCORES.get(predicted_class, 0)
+        image_score    = per_item_score * object_count
+
+        # 4) Award to user
+        current_user.score += image_score
+
+        results.append({
+            'filename': fn,
+            'predicted_class': predicted_class,
+            'confidence': round(confidence*100,1),
+            'object_count': object_count,
+            'image_score': image_score,
+            'url': url_for('static', filename='uploads/' + "out_" + fn)
+        })
+
+    db.session.commit()
+    return render_template('result.html', results=results)
 
 @app_blueprint.route('/')
 @app_blueprint.route('/home')
 def home_page():
+    if current_user.is_authenticated:
+        flash(f"Welcome back, {current_user.username}!", category='info')
     return render_template('home.html')
 
-
-@app_blueprint.route("/upload")
+@app_blueprint.route('/upload')
+@login_required
 def upload_page():
-    return render_template("upload.html")
-
-
-@app_blueprint.route("/analyze", methods=["POST"])
-def analyze():
-    uploaded_files = request.files.getlist('images')
-    results = []
-    total_score_gain = 0
-
-    for image in uploaded_files:
-        if image.filename == '':
-            continue
-
-        # Save the uploaded file
-        filename = datetime.now().strftime("object_detected_%Y%m%d%H%M%S") + "_" + image.filename
-        filepath = os.path.join(UPLOAD_FOLDER, filename)
-        image.save(filepath)
-
-        # Get object count and image score from object classifier
-        object_count, image_score = universal_object_classifier(filepath, min_area=500, show_result=False)
-        total_score_gain += image_score
-
-        # Get predicted class for display purposes
-        predicted_class, confidence = classify_image(filepath)
-
-        results.append({
-            'filename': filename,
-            'predicted_class': predicted_class,
-            'confidence': round(confidence * 100, 2),
-            'object_count': object_count,
-            'image_score': image_score
-        })
-
-    # Update current user’s score
-    if current_user.is_authenticated:
-        current_user.score += total_score_gain
-        db.session.commit()
-
-    return render_template("result.html", results=results)
-
+    return render_template('upload.html')
 
 @app_blueprint.route('/leaderboard')
 def leaderboard_page():
