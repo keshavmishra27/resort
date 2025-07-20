@@ -14,7 +14,9 @@ def classify_image(image_path):
     img = np.expand_dims(img, axis=0)
 
     prediction = model.predict(img)[0]
+    global predicted_class
     predicted_class = CLASS_NAMES[np.argmax(prediction)]
     confidence = float(np.max(prediction))
+    
 
     return predicted_class, confidence

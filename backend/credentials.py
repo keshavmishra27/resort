@@ -1,4 +1,4 @@
-from . import db, login_manager, bcrypt
+from backend import db, login_manager, bcrypt
 from flask_login import UserMixin
 
 @login_manager.user_loader
@@ -14,11 +14,11 @@ class User(db.Model,UserMixin):
 
     @property
     def password(self):
-        return self.password
+        raise AttributeError("Password is write-only.")
     
     @password.setter
-    def password(self,plain_test_pswd):
-        self.pswd_hash=bcrypt.generate_password_hash(plain_test_pswd).decode('utf-8')
+    def password(self, plain_test_pswd):
+        self.pswd_hash = bcrypt.generate_password_hash(plain_test_pswd).decode('utf-8')
 
     def check_pswd_correction(self, attempted_pswd):
         return bcrypt.check_password_hash(self.pswd_hash, attempted_pswd)

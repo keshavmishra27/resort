@@ -8,12 +8,6 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Quantico:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
-    .h1 {
-      font-family: 'Quantico', sans-serif;
-      font-weight: 700;
-    }
-
-    
     body {
       margin: 0;
       padding: 0;
@@ -21,47 +15,67 @@
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-      font-family: Arial, sans-serif;
+      font-family: 'Quantico', sans-serif;
       color: white;
       text-align: center;
       padding-top: 50px;
     }
 
-    form {
+    .upload-form {
       background: linear-gradient(-45deg, #10b981, #22c55e, #059669, #10b981);
       background-size: 200% 200%;
       animation: gradientMove 6s ease infinite;
       display: inline-block;
-      padding: 20px;
-      border-radius: 8px;
-
-
-@keyframes gradientMove {
-  0%, 100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-}
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.3);
     }
 
-    button {
-      margin-top: 10px;
-      padding: 10px 20px;
+    @keyframes gradientMove {
+      0%, 100% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+    }
+
+    .upload-form input[type="file"] {
+      margin: 10px 0;
+      color: white;
+    }
+
+    .upload-form button {
+      margin-top: 15px;
+      padding: 10px 25px;
       font-size: 16px;
+      font-weight: bold;
+      border: none;
+      background-color: #0d9488;
+      color: white;
+      border-radius: 6px;
       cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .upload-form button:hover {
+      background-color: #065f46;
+    }
+
+    h1 {
+      font-weight: 700;
+      text-shadow: 1px 1px 2px #000;
     }
   </style>
 
-
   <h1>Upload an Image</h1>
   <form 
+    class="upload-form"
     action="{{ url_for('app_blueprint.analyze') }}" 
     method="post" 
     enctype="multipart/form-data"
   >
-    <input type="file" name="images" multiple />
+    <input type="file" name="images" multiple required />
     <br />
     <button type="submit">Upload & Analyze</button>
   </form>

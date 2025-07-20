@@ -7,25 +7,27 @@
 {% block content %}
   <h1>Classification & Object Detection Results</h1>
 
-  {% for result in results %}
-    <div style="margin-bottom: 30px; border: 1px solid #ccc; padding: 10px; background: #f0f0f0; color: black;">
-      <h3>Image: {{ result.filename }}</h3>
-      <p><strong>Class:</strong> {{ result.predicted_class }}</p>
-      <p><strong>Objects Detected:</strong></p>
-      <ul>
-        {% for result in results %}
-  <div>
-    <h3>{{ result.filename }}</h3>
-    <p><strong>Predicted Class:</strong> {{ result.predicted_class }}</p>
-    <p><strong>Objects in Image:</strong> {{ result.objects.object_count }}</p>
-    <p><strong>Score:</strong> {{ result.objects.score }}</p>
-    <img src="{{ url_for('static', filename='uploads/' ~ result.filename) }}" style="max-width: 300px;">
-    <hr>
-  </div>
-{% endfor %}
-      </ul>
-      <img src="{{ url_for('static', filename='uploads/' + result.filename) }}" 
-           style="max-width: 400px; height: auto;" />
+  {% if results %}
+    {% for result in results %}
+      <div style="margin-bottom: 30px; border: 1px solid #ccc; padding: 15px; background: #f8f8f8; color: #333;">
+        <h3>🖼️ Image: {{ result.filename }}</h3>
+        <p><strong>Predicted Class:</strong> {{ result.predicted_class }}</p>
+        <p><strong>Prediction Confidence:</strong> {{ result.confidence }}%</p>
+        <p><strong>Objects Detected:</strong> {{ result.object_count }}</p>
+        <p><strong>Score for this Image:</strong> {{ result.image_score }}</p>
+
+        <img src="{{ url_for('static', filename='uploads/' ~ result.filename) }}"
+             alt="Uploaded Image"
+             style="max-width: 300px; display: block; margin-top: 10px;">
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>No results to display.</p>
+  {% endif %}
+
+  {% if current_user.is_authenticated %}
+    <div style="margin-top: 40px;">
+      <h3>✅ Your updated total score: {{ current_user.score }}</h3>
     </div>
-  {% endfor %}
+  {% endif %}
 {% endblock %}
