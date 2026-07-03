@@ -106,3 +106,33 @@ python run.py
 ```
 
 The server will start on `http://127.0.0.1:5000/`. You can navigate here in your browser, register an account, and start uploading images!
+
+---
+
+##  Model Training & Testing
+
+**1. Training the Model**
+If you wish to retrain the image classification model, you can run the `train_model.py` script. The script handles data loading, model compilation, training, and testing metrics evaluation. It will save the resulting model to `backend/models/garbage_tf_model.h5`, and generate loss/accuracy plots and a confusion matrix.
+```bash
+python backend\train_model.py
+```
+
+**2. Testing on Uploaded Images**
+To quickly test the trained model on raw, unlabeled images, place your `.jpg` or `.png` files in the `backend\static\uploads` folder. Then, run the testing script to output the predicted class and confidence score for each image in the terminal:
+```bash
+python backend\test.py
+```
+
+**3. Environment Variables (Optional)**
+The training and testing scripts use `python-dotenv` to manage file paths securely. If you want to use custom absolute paths on your computer without exposing them in GitHub, create a `.env` file in the root directory:
+```env
+UPLOADS_DIR="absolute\path\to\resort\backend\static\uploads"
+MODEL_PATH="absolute\path\to\resort\backend\models\garbage_tf_model.h5"
+TRAIN_DIR="absolute\path\to\resort\dataset\splitted\train"
+VAL_DIR="absolute\path\to\resort\dataset\splitted\valid"
+TEST_DIR="absolute\path\to\resort\dataset\splitted\test"
+```
+If you don't create a `.env` file, the scripts will automatically fall back to safe relative paths inside the project folder.
+
+**4. Version Control**
+A `.gitignore` file is properly configured to ignore large auto-generated files (datasets, model weights `*.h5`, cache, generated plots, your `venv`, and the `.env` file), keeping your repository clean and your local absolute paths private!

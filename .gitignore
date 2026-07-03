@@ -1,0 +1,29 @@
+# Environments
+venv/
+env/
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyd
+
+# Datasets
+dataset/
+dataset.zip
+
+# Models
+*.h5
+
+# Reports, plots and temp files
+evaluation_report.txt
+*.png
+temp_crop.jpg
+
+# Flask / App instance folder
+instance/
+
+# Uploaded images
+uploads/
+backend/static/uploads/
