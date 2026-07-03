@@ -64,11 +64,16 @@ Each waste classification corresponds to a specific base score. The total score 
 
 | Waste Classification                     | Base Score per Item | Impact Level  |
 | ---------------------------------------- | :-----------------: | ------------- |
-| **Biodegradable**                        | 10                  | Low           |
-| **Ewaste**                               | 20                  | Medium        |
-| **Hazardous**                            | 30                  | High          |
-| **Non Biodegradable**                    | 40                  | Very High     |
-| **Pharmaceutical and Biomedical Waste**  | 50                  | Critical      |
+| **Biological**                           | 10                  | Low           |
+| **Paper**                                | 10                  | Low           |
+| **Cardboard**                            | 10                  | Low           |
+| **Glass**                                | 20                  | Medium        |
+| **Metal**                                | 20                  | Medium        |
+| **Clothes**                              | 20                  | Medium        |
+| **Shoes**                                | 20                  | Medium        |
+| **Plastic**                              | 30                  | High          |
+| **Trash**                                | 40                  | Very High     |
+| **Battery**                              | 50                  | Critical      |
 
 ---
 
@@ -135,4 +140,4 @@ TEST_DIR="absolute\path\to\resort\dataset\splitted\test"
 If you don't create a `.env` file, the scripts will automatically fall back to safe relative paths inside the project folder.
 
 **4. Version Control**
-A `.gitignore` file is properly configured to ignore large auto-generated files (datasets, model weights `*.h5`, cache, generated plots, your `venv`, and the `.env` file), keeping your repository clean and your local absolute paths private!
+A `.gitignore` file is properly configured to ignore large auto-generated files (datasets, model weights `*.h5`, cache, generated plots), your `venv`, the `.env` file, user uploads, and the `instance/` database. This keeps your repository clean and your local absolute paths private!
